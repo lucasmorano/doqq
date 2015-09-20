@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        textarea {
+            border: none;
+            width: 98%;
+            margin: 5px 0;
+            padding: 1%;
+            outline: none;
+            resize: none;
+        }
+    </style>
+    <title>Doqq</title>
+    <script src="sockjs-0.3.4.js"></script>
+    <script src="stomp.js"></script>
+    <script src="https://rawgit.com/aaditmshah/capsLock/master/capsLock.js"></script>
+    <script type="text/javascript">
+
+        var stompClient = null;
+        var loggedUser = null;
+        var capsLock;
+
+        function setConnected(connected, user) {
+            loggedUser = user;
+            document.getElementById('textDocument').style.visibility = connected ? 'visible' : 'hidden';
+            document.getElementById('textDocument').addEventListener('keydown', function (e) {
+                sendKey(e);
+            }, false);
+        }
+
+        function closeDialog() {
+            document.getElementById('window').close();
+            document.getElementById('textDocument').focus();
+
+        }
+
+        function mergeAction(action) {
+            if (action.userName == loggedUser) {
+                return;
+            }
+            var text = document.getElementById('textDocument');
+            text.value += action.result;
+            //TODO Tratar o local do cursor;
+        }
+
+        function connect(user) {
+            var socket = new SockJS('/hello');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+                setConnected(true, user);
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/topic/greetings', function (greeting) {
+                    //TODO Mostrar que um usuario entrou e dar boas vindas
+                });
+                stompClient.subscribe('/topic/actions', function (action) {
+                    mergeAction(JSON.parse(action.body));
+                });
+                closeDialog();
+            });
+        }
+
+        function showConnectDialog() {
+            var dialog = document.getElementById('window').show();
+            document.getElementById('exit').onclick = function () {
+                dialog.close();
+            };
+        }
+
+        function disconnect() {
+            if (stompClient != null) {
+                stompClient.disconnect();
+            }
+            setConnected(false);
+            console.log("Disconnected");
+            showConnectDialog();
+        }
+
+        function sendLogin() {
+            var user = document.getElementById('user').setAttribute('disabled', 'true');
+            var user = document.getElementById('user').value;
+            connect(user);
+            stompClient.send("/app/hello", {}, JSON.stringify({'userName': user}));
+        }
+
+        function sendKey(e) {
+            var keyCode = e.keyCode;
+            if ((keyCode <= 90 && keyCode >= 65 ) || (keyCode == 13 || keyCode == 32 || keyCode == 8)) {
+                stompClient.send("/app/action", {}, JSON.stringify({
+                    'keyCode': keyCode,
+                    'shiftKey': e.shiftKey,
+                    'capsLockStatus': capsLock.status,
+                    'userName': loggedUser
+                }));
+            }
+        }
+
+    </script>
+</head>
+<body onload="disconnect()">
+<div>
+    <dialog id="window">
+        <h3>Doqq</h3>
+
+        <div>
+            <label>Digite seu usuário: </label><input style="outline: none" type="text" id="user"/>
+            <button id="sendLogin" onclick="sendLogin()">Enviar</button>
+        </div>
+    </dialog>
+    <div id="documentDiv">
+        <textarea rows="34" id="textDocument"></textarea>
+    </div>
+</div>
+</body>
+</html>
