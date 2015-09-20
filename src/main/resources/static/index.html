@@ -10,105 +10,57 @@
             outline: none;
             resize: none;
         }
+        .side-app {
+            background-color: #c7d2d1;
+            padding-bottom: 1000px;
+            margin-bottom: -1000px;
+            height: 100%;
+        }
+
+        .document {
+            border-left-style: solid;
+            border-left-width: 10px;
+            border-right-style: solid;
+            border-right-width: 10px;
+        }
+
+
     </style>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
     <title>Doqq</title>
     <script src="sockjs-0.3.4.js"></script>
     <script src="stomp.js"></script>
+    <script src="app.js">s</script>
     <script src="https://rawgit.com/aaditmshah/capsLock/master/capsLock.js"></script>
-    <script type="text/javascript">
-
-        var stompClient = null;
-        var loggedUser = null;
-        var capsLock;
-
-        function setConnected(connected, user) {
-            loggedUser = user;
-            document.getElementById('textDocument').style.visibility = connected ? 'visible' : 'hidden';
-            document.getElementById('textDocument').addEventListener('keydown', function (e) {
-                sendKey(e);
-            }, false);
-        }
-
-        function closeDialog() {
-            document.getElementById('window').close();
-            document.getElementById('textDocument').focus();
-
-        }
-
-        function mergeAction(action) {
-            if (action.userName == loggedUser) {
-                return;
-            }
-            var text = document.getElementById('textDocument');
-            text.value += action.result;
-            //TODO Tratar o local do cursor;
-        }
-
-        function connect(user) {
-            var socket = new SockJS('/hello');
-            stompClient = Stomp.over(socket);
-            stompClient.connect({}, function (frame) {
-                setConnected(true, user);
-                console.log('Connected: ' + frame);
-                stompClient.subscribe('/topic/greetings', function (greeting) {
-                    //TODO Mostrar que um usuario entrou e dar boas vindas
-                });
-                stompClient.subscribe('/topic/actions', function (action) {
-                    mergeAction(JSON.parse(action.body));
-                });
-                closeDialog();
-            });
-        }
-
-        function showConnectDialog() {
-            var dialog = document.getElementById('window').show();
-            document.getElementById('exit').onclick = function () {
-                dialog.close();
-            };
-        }
-
-        function disconnect() {
-            if (stompClient != null) {
-                stompClient.disconnect();
-            }
-            setConnected(false);
-            console.log("Disconnected");
-            showConnectDialog();
-        }
-
-        function sendLogin() {
-            var user = document.getElementById('user').setAttribute('disabled', 'true');
-            var user = document.getElementById('user').value;
-            connect(user);
-            stompClient.send("/app/hello", {}, JSON.stringify({'userName': user}));
-        }
-
-        function sendKey(e) {
-            var keyCode = e.keyCode;
-            if ((keyCode <= 90 && keyCode >= 65 ) || (keyCode == 13 || keyCode == 32 || keyCode == 8)) {
-                stompClient.send("/app/action", {}, JSON.stringify({
-                    'keyCode': keyCode,
-                    'shiftKey': e.shiftKey,
-                    'capsLockStatus': capsLock.status,
-                    'userName': loggedUser
-                }));
-            }
-        }
-
-    </script>
 </head>
 <body onload="disconnect()">
-<div>
-    <dialog id="window">
-        <h3>Doqq</h3>
-
-        <div>
-            <label>Digite seu usuário: </label><input style="outline: none" type="text" id="user"/>
-            <button id="sendLogin" onclick="sendLogin()">Enviar</button>
+<div class="container-fluid">
+    <div class="modal show" id="window" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Doqq</h3>
+                </div>
+                <div class="modal-body">
+                    <label class="text-center">Digite seu login: </label><input type="text" id="user"/>
+                </div>
+                <div class="modal-footer">
+                    <button id="sendLogin" class="btn btn-default btn-sm" onclick="sendLogin()">Enviar</button>
+                </div>
+            </div>
         </div>
-    </dialog>
-    <div id="documentDiv">
-        <textarea rows="34" id="textDocument"></textarea>
+    </div>
+    <div class="row">
+        <div id="leftPad" class="col-md-2 side-app">
+        </div>
+        <div id="documentDiv" class="col-md-10">
+            <textarea rows="34" id="textDocument"></textarea>
+        </div>
+        <div id="rightPad" class="col-md-2 side-app">
+
+        </div>
     </div>
 </div>
 </body>
