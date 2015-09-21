@@ -5,20 +5,31 @@ package com.jal.domain;
  */
 public class Document {
 
-    private String content;
+    private String userName;
+    private String currentDocument;
 
     public Document() {
     }
 
-    public Document(String content) {
-        this.content = content;
+
+    public Document(String userName, String currentDocument) {
+        this.userName = userName;
+        this.currentDocument = currentDocument;
     }
 
-    public String getContent() {
-        return content;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getCurrentDocument() {
+        return currentDocument;
+    }
+
+    public void setCurrentDocument(String currentDocument) {
+        this.currentDocument = currentDocument;
     }
 }

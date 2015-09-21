@@ -13,8 +13,7 @@ public class Action {
 
     private String userName;
 
-    public Action() {
-    }
+    private Integer caretPosition;
 
     public int getKeyCode() {
         return keyCode;
@@ -42,6 +41,14 @@ public class Action {
 
     public String getUserName() {
         return userName;
+    }
+
+    public Integer getCaretPosition() {
+        return caretPosition;
+    }
+
+    public void setCaretPosition(Integer caretPosition) {
+        this.caretPosition = caretPosition;
     }
 
     public void setUserName(String userName) {
