@@ -2,6 +2,7 @@ package com.jal.service;
 
 import com.jal.domain.Action;
 import com.jal.domain.ActionPerformed;
+import com.jal.domain.SpecialAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,11 @@ public class ActionPerformedService {
 
 
     public ActionPerformed broadcast(Action action) {
+        if(action.getKeyCode() == 8){
+            ActionPerformed actionPerformed = new ActionPerformed(action.getCaretPosition(), action.getUserName(), null, SpecialAction.BACKSPACE);
+            documentService.appendToDocument(action.getCaretPosition(), SpecialAction.BACKSPACE);
+            return actionPerformed;
+        }
         if(action.getKeyCode() == 13){
             ActionPerformed actionPerformed = new ActionPerformed(action.getCaretPosition(), action.getUserName(), "\n");
             documentService.appendToDocument(action.getCaretPosition(), actionPerformed.getResult());

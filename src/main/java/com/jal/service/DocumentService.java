@@ -1,5 +1,6 @@
 package com.jal.service;
 
+import com.jal.domain.SpecialAction;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,5 +26,10 @@ public class DocumentService {
         } else {
             this.currentDocument = new StringBuilder(currentDocument).insert(caretPosition, result).toString();
         }
+    }
+
+    public void appendToDocument(Integer caretPosition, SpecialAction backspace) {
+        String currentDocument = getCurrentDocument();
+        this.currentDocument = new String(currentDocument.substring(0, caretPosition -1) + currentDocument.substring(caretPosition));
     }
 }

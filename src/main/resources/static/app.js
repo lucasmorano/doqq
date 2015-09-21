@@ -20,6 +20,10 @@ function mergeAction(action) {
     }
     var text = document.getElementById('textDocument');
     var caretPosition = action.caretPosition;
+    if(action.specialAction != null){
+        text.value = text.value.substr(0, caretPosition - 1) + text.value.substr(caretPosition);
+        return;
+    }
     if(caretPosition > text.length) {
         text.value += action.result;
     } else {

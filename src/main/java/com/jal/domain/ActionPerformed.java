@@ -9,11 +9,19 @@ public class ActionPerformed  {
     private String userName;
 
     private String result;
+    private SpecialAction specialAction;
 
     public ActionPerformed(Integer caretPosition, String userName, String result) {
         this.caretPosition = caretPosition;
         this.userName = userName;
         this.result = result;
+    }
+
+    public ActionPerformed(Integer caretPosition, String userName, String result, SpecialAction specialAction) {
+        this.caretPosition = caretPosition;
+        this.userName = userName;
+        this.result = result;
+        this.specialAction = specialAction;
     }
 
     public String getResult() {
@@ -38,5 +46,13 @@ public class ActionPerformed  {
 
     public void setCaretPosition(Integer caretPosition) {
         this.caretPosition = caretPosition;
+    }
+
+    public SpecialAction getSpecialAction() {
+        return specialAction;
+    }
+
+    public void setSpecialAction(SpecialAction specialAction) {
+        this.specialAction = specialAction;
     }
 }
